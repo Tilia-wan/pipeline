@@ -47,7 +47,7 @@ jobs:
             tar -xzf "$RUNNER_TEMP/cangjie/sdk.tar.gz" -C "$RUNNER_TEMP/cangjie"
             echo "Extracted tree:"
             find "$RUNNER_TEMP/cangjie" -maxdepth 2 -mindepth 1
-            CANGJIE_HOME="$(find "$RUNNER_TEMP/cangjie" -maxdepth 3 -type d -name cangjie | head -n1)"
+            CANGJIE_HOME="$(find "$RUNNER_TEMP/cangjie" -mindepth 1 -maxdepth 3 -type d -name cangjie | head -n1)"
             if [ -z "${CANGJIE_HOME}" ]; then
               echo "::error::Could not locate cangjie/ under $RUNNER_TEMP/cangjie" >&2
               exit 1
