@@ -4,8 +4,5 @@ name = "pipeline"
 description = "Sample Cangjie project used to verify the CI unit-test pipeline."
 version = "0.1.0"
 output-type = "executable"
-src-dir = ""
+src-dir = "src/pipeline"
 target-dir = "target"
-
-[profile.test]
-customized-option = "--display-level=FULL"
