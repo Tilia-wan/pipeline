@@ -48,8 +48,12 @@ jobs:
             echo "Extracted tree:"
             find "$RUNNER_TEMP/cangjie" -maxdepth 2 -mindepth 1
             CANGJIE_HOME="$(find "$RUNNER_TEMP/cangjie" -maxdepth 3 -type d -name cangjie | head -n1)"
-            if [ -z "${CANGJIE_HOME}" ] || [ ! -x "${CANGJIE_HOME}/bin/cjc" ]; then
-              echo "::error::Could not locate cangjie/ with bin/cjc under $RUNNER_TEMP/cangjie" >&2
+            if [ -z "${CANGJIE_HOME}" ]; then
+              echo "::error::Could not locate cangjie/ under $RUNNER_TEMP/cangjie" >&2
+              exit 1
+            fi
+            if [ ! -x "${CANGJIE_HOME}/tools/bin/cjc" ] && [ ! -x "${CANGJIE_HOME}/bin/cjc" ]; then
+              echo "::error::Found ${CANGJIE_HOME} but no cjc under tools/bin/ or bin/" >&2
               exit 1
             fi
             echo "cangjie_home=${CANGJIE_HOME}" >> "$GITHUB_OUTPUT"
@@ -69,6 +73,9 @@ jobs:
           fi
           echo "CANGJIE_HOME=${CANGJIE_HOME}" >> "$GITHUB_ENV"
           echo "${CANGJIE_HOME}/bin" >> "$GITHUB_PATH"
+          if [ -d "${CANGJIE_HOME}/tools/bin" ]; then
+            echo "${CANGJIE_HOME}/tools/bin" >> "$GITHUB_PATH"
+          fi
           cjc -v
           cjpm --version
 
