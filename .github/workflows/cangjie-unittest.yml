@@ -29,8 +29,11 @@ jobs:
         shell: bash
         env:
           CANGJIE_HOME: ${{ vars.CANGJIE_HOME || env.CANGJIE_HOME }}
+          CANGJIE_SDK_TARBALL_URL: ${{ secrets.CANGJIE_SDK_TARBALL_URL }}
         run: |
           set -euo pipefail
+          echo "CANGJIE_HOME=${CANGJIE_HOME:-<unset>}"
+          echo "CANGJIE_SDK_TARBALL_URL=${CANGJIE_SDK_TARBALL_URL:-<unset>}"
           if [ -n "${CANGJIE_HOME:-}" ] && [ -x "${CANGJIE_HOME}/bin/cjc" ]; then
             echo "Using pre-installed SDK at ${CANGJIE_HOME}"
             echo "cangjie_home=${CANGJIE_HOME}" >> "$GITHUB_OUTPUT"
@@ -42,7 +45,13 @@ jobs:
             curl -fsSL --retry 3 -o "$RUNNER_TEMP/cangjie/sdk.tar.gz" \
               "${CANGJIE_SDK_TARBALL_URL}"
             tar -xzf "$RUNNER_TEMP/cangjie/sdk.tar.gz" -C "$RUNNER_TEMP/cangjie"
+            echo "Extracted tree:"
+            find "$RUNNER_TEMP/cangjie" -maxdepth 2 -mindepth 1
             CANGJIE_HOME="$(find "$RUNNER_TEMP/cangjie" -maxdepth 3 -type d -name cangjie | head -n1)"
+            if [ -z "${CANGJIE_HOME}" ] || [ ! -x "${CANGJIE_HOME}/bin/cjc" ]; then
+              echo "::error::Could not locate cangjie/ with bin/cjc under $RUNNER_TEMP/cangjie" >&2
+              exit 1
+            fi
             echo "cangjie_home=${CANGJIE_HOME}" >> "$GITHUB_OUTPUT"
             exit 0
           fi
