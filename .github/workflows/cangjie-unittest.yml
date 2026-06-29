@@ -66,7 +66,7 @@ jobs:
       - name: Activate SDK environment
         shell: bash
         run: |
-          set -euo pipefail
+          set -eo pipefail
           CANGJIE_HOME="${{ steps.sdk.outputs.cangjie_home }}"
           if [ -f "${CANGJIE_HOME}/envsetup.sh" ]; then
             source "${CANGJIE_HOME}/envsetup.sh"
